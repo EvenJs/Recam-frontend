@@ -36,10 +36,12 @@ export default function AgentDashboard() {
       </div>
 
       {/* Filters */}
-      <StatusFilterTabs
-        activeStatus={status}
-        onStatusChange={handleStatusChange}
-      />
+      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <StatusFilterTabs
+          activeStatus={status}
+          onStatusChange={handleStatusChange}
+        />
+      </div>
 
       {/* Cards */}
       <div className="space-y-4">
