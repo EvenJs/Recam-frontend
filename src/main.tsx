@@ -20,6 +20,7 @@ import AgentsPage from "@/pages/AgentsPage";
 import ProfilePage from "@/pages/ProfilePage";
 
 import "./index.css";
+import { Toaster } from "sonner";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -61,7 +62,7 @@ createRoot(document.getElementById("root")!).render(
           </Route>
         </Routes>
       </BrowserRouter>
-
+      <Toaster position="top-right" richColors />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </StrictMode>,
