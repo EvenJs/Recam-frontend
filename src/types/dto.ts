@@ -18,9 +18,10 @@ export interface CreateListingDto {
 export type UpdateListingDto = Partial<CreateListingDto>
 
 export interface CreateAgentDto {
-  firstName: string
-  lastName: string
+  agentFirstName: string
+  agentLastName: string
   email: string
+  companyName?: string
 }
 
 export interface UpdatePasswordDto {

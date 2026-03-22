@@ -7,11 +7,14 @@ export interface User {
 }
 
 export interface Agent {
-  id: number
-  firstName: string
-  lastName: string
+  id: string
   email: string
-  companyName: string
+  agentFirstName: string
+  agentLastName: string
+  avatarUrl?: string
+  companyName?: string
+  phoneNumber?: string
+  roles?: string[]
 }
 
 export interface ListingCase {

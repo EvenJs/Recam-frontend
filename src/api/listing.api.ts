@@ -37,6 +37,6 @@ export async function updateStatus(id: number, status: ListcaseStatus): Promise<
   return response.data.data
 }
 
-export async function assignAgent(listingId: number, agentId: number): Promise<void> {
+export async function assignAgent(listingId: number, agentId: string): Promise<void> {
   await apiClient.post(`/listings/${listingId}/assign-agent`, { agentId })
 }

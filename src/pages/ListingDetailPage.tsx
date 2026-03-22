@@ -105,7 +105,7 @@ export default function ListingDetailPage() {
   });
 
   const assignMutation = useMutation({
-    mutationFn: (agentId: number) => assignAgent(listingId, agentId),
+    mutationFn: (agentId: string) => assignAgent(listingId, agentId),
     onSuccess: () => {
       toast.success("Agent assigned");
       setAgentDialogOpen(false);
@@ -189,7 +189,7 @@ export default function ListingDetailPage() {
                     (foundAgent ? (
                       <div className="p-3 border rounded-md bg-muted text-sm">
                         <p className="font-medium">
-                          {foundAgent.firstName} {foundAgent.lastName}
+                          {foundAgent.agentFirstName} {foundAgent.agentLastName}
                         </p>
                         <p className="text-muted-foreground">
                           {foundAgent.email}
