@@ -31,6 +31,7 @@ export interface ListingCase {
   listcaseStatus: ListcaseStatus
   createdAt: string
   assignedAgentId?: number | null
+  mediaTypes: number[]
 }
 
 export interface MediaAsset {
