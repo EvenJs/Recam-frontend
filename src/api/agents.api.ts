@@ -8,7 +8,11 @@ export async function getAgents(): Promise<Agent[]> {
 }
 
 export async function createAgent(data: CreateAgentDto): Promise<Agent> {
-  const response = await apiClient.post('/agents', data)
+  const response = await apiClient.post('/agents', {
+    email: data.email,
+    agentFirstName: data.agentFirstName,
+    agentLastName: data.agentLastName,
+  })
   return response.data.data
 }
 
@@ -21,6 +25,6 @@ export async function searchAgent(email: string): Promise<Agent | null> {
   }
 }
 
-export async function linkToCompany(agentId: number): Promise<void> {
+export async function linkToCompany(agentId: string): Promise<void> {
   await apiClient.post(`/agents/${agentId}/photography-company`)
 }

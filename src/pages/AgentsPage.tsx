@@ -29,7 +29,7 @@ export default function AgentsPage() {
   });
 
   const linkMutation = useMutation({
-    mutationFn: (agentId: number) => linkToCompany(agentId),
+    mutationFn: (agentId: string) => linkToCompany(agentId),
     onSuccess: () => {
       toast.success("Agent linked to company");
       queryClient.invalidateQueries({ queryKey: ["agents"] });
@@ -127,7 +127,7 @@ export default function AgentsPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="font-medium text-sm">
-                      {agent.firstName} {agent.lastName}
+                      {agent.agentFirstName} {agent.agentLastName}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {agent.email}
@@ -177,7 +177,7 @@ function AgentRow({
   return (
     <tr className="border-b hover:bg-slate-50 transition-colors">
       <td className="px-6 py-4 font-medium">
-        {agent.firstName} {agent.lastName}
+        {agent.agentFirstName} {agent.agentLastName}
       </td>
       <td className="px-6 py-4 text-muted-foreground">{agent.email}</td>
       <td className="px-6 py-4">

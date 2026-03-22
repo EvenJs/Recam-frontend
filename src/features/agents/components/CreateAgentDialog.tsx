@@ -17,8 +17,8 @@ import { createAgent } from "@/api/agents.api";
 import { queryClient } from "@/lib/queryClient";
 
 const agentSchema = z.object({
-  firstName: z.string().min(1, "Required"),
-  lastName: z.string().min(1, "Required"),
+  agentFirstName: z.string().min(1, "Required"),
+  agentLastName: z.string().min(1, "Required"),
   email: z.string().email("Enter a valid email"),
 });
 
@@ -67,20 +67,20 @@ export default function CreateAgentDialog({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" {...register("firstName")} />
-              {errors.firstName && (
+              <Input id="firstName" {...register("agentFirstName")} />
+              {errors.agentFirstName && (
                 <p className="text-sm text-destructive">
-                  {errors.firstName.message}
+                  {errors.agentFirstName.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" {...register("lastName")} />
-              {errors.lastName && (
+              <Input id="lastName" {...register("agentLastName")} />
+              {errors.agentLastName && (
                 <p className="text-sm text-destructive">
-                  {errors.lastName.message}
+                  {errors.agentLastName.message}
                 </p>
               )}
             </div>
