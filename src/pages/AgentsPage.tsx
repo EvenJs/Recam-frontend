@@ -1,32 +1,28 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Search, UserPlus, Link } from "lucide-react";
+import { UserPlus, Pencil, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import CreateAgentDialog from "@/features/agents/components/CreateAgentDialog";
 import { useAgents } from "@/features/agents/hooks/useAgents";
-import { searchAgent, linkToCompany } from "@/api/agents.api";
+import { linkToCompany } from "@/api/agents.api";
 import { queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
-import { useDebounce } from "@/hooks/useDebounce";
 import type { Agent } from "@/types/models";
 
+const roleColors: Record<string, string> = {
+  Photographer: "bg-blue-100 text-blue-700",
+  Videographer: "bg-purple-100 text-purple-700",
+  VRCreator: "bg-teal-100 text-teal-700",
+};
+
 export default function AgentsPage() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [searchEmail, setSearchEmail] = useState("");
-  const debouncedEmail = useDebounce(searchEmail, 300);
+  const [activeFilter, setActiveFilter] = useState("All");
 
   const { agents, isLoading } = useAgents();
-
-  const { data: searchResult } = useQuery({
-    queryKey: ["agentSearch", debouncedEmail],
-    queryFn: () => searchAgent(debouncedEmail),
-    enabled: debouncedEmail.length > 2,
-  });
 
   const linkMutation = useMutation({
     mutationFn: (agentId: string) => linkToCompany(agentId),
@@ -39,133 +35,78 @@ export default function AgentsPage() {
 
   if (!isAdmin) return null;
 
-  const displayAgents =
-    debouncedEmail.length > 2 ? (searchResult ? [searchResult] : []) : agents;
+  const filters = ["All", "Photographer", "Videographer", "VRCreator"];
+
+  const filtered =
+    activeFilter === "All"
+      ? agents
+      : agents.filter((a) => a.roles?.includes(activeFilter));
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">Staff</h1>
-        <Button onClick={() => setDialogOpen(true)}>
+        <div>
+          <h1 className="text-2xl font-bold text-center md:text-left">
+            Hi, Welcome {user?.email?.split("@")[0]}!
+          </h1>
+        </div>
+        <Button
+          onClick={() => setDialogOpen(true)}
+          className="bg-[#1DA1F2] hover:bg-[#1a91da] rounded-full px-6"
+        >
           <UserPlus className="w-4 h-4 mr-2" />
-          Add Agent
+          Add new staff
         </Button>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by email"
-          className="pl-10"
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-        />
+      {/* Filter tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {filters.map((filter) => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+              activeFilter === filter
+                ? "bg-[#1DA1F2] text-white"
+                : "bg-slate-100 text-muted-foreground hover:bg-slate-200"
+            }`}
+          >
+            {filter === "VRCreator" ? "VR Creator" : filter}
+          </button>
+        ))}
       </div>
 
-      {/* Desktop table */}
-      <div className="hidden md:block rounded-lg border bg-white overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-slate-50">
-              <th className="text-left px-6 py-3 font-medium text-muted-foreground">
-                Name
-              </th>
-              <th className="text-left px-6 py-3 font-medium text-muted-foreground">
-                Email
-              </th>
-              <th className="text-left px-6 py-3 font-medium text-muted-foreground">
-                Company
-              </th>
-              <th className="px-6 py-3" />
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i} className="border-b">
-                    {Array.from({ length: 3 }).map((_, j) => (
-                      <td key={j} className="px-6 py-4">
-                        <Skeleton className="h-4 w-full" />
-                      </td>
-                    ))}
-                    <td className="px-6 py-4" />
-                  </tr>
-                ))
-              : displayAgents.map((agent) => (
-                  <AgentRow
-                    key={agent.id}
-                    agent={agent}
-                    onLink={() => linkMutation.mutate(agent.id)}
-                    isLinking={linkMutation.isPending}
-                  />
-                ))}
-          </tbody>
-        </table>
-
-        {!isLoading && displayAgents.length === 0 && (
-          <div className="px-6 py-8 text-center text-sm text-muted-foreground">
-            {debouncedEmail.length > 2
-              ? "No agent found with that email."
-              : "No agents yet."}
-          </div>
-        )}
-      </div>
-
-      {/* Mobile cards */}
-      <div className="md:hidden space-y-3">
-        {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-24 w-full rounded-lg" />
-            ))
-          : displayAgents.map((agent) => (
-              <div
-                key={agent.id}
-                className="border rounded-lg p-4 bg-white space-y-2"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-medium text-sm">
-                      {agent.agentFirstName} {agent.agentLastName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {agent.email}
-                    </p>
-                    {agent.companyName && (
-                      <p className="text-xs text-muted-foreground">
-                        {agent.companyName}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => linkMutation.mutate(agent.id)}
-                    disabled={linkMutation.isPending}
-                  >
-                    <Link className="w-3 h-3 mr-1" />
-                    Link
-                  </Button>
-                </div>
-              </div>
-            ))}
-
-        {!isLoading && displayAgents.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            {debouncedEmail.length > 2
-              ? "No agent found with that email."
-              : "No agents yet."}
-          </p>
-        )}
-      </div>
+      {/* Card grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="h-52 w-full rounded-xl" />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-12">
+          No staff found.
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filtered.map((agent) => (
+            <AgentCard
+              key={agent.id}
+              agent={agent}
+              onLink={() => linkMutation.mutate(agent.id)}
+              isLinking={linkMutation.isPending}
+            />
+          ))}
+        </div>
+      )}
 
       <CreateAgentDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   );
 }
 
-function AgentRow({
+function AgentCard({
   agent,
   onLink,
   isLinking,
@@ -175,29 +116,74 @@ function AgentRow({
   isLinking: boolean;
 }) {
   return (
-    <tr className="border-b hover:bg-slate-50 transition-colors">
-      <td className="px-6 py-4 font-medium">
-        {agent.agentFirstName} {agent.agentLastName}
-      </td>
-      <td className="px-6 py-4 text-muted-foreground">{agent.email}</td>
-      <td className="px-6 py-4">
-        {agent.companyName ? (
-          <Badge variant="secondary">{agent.companyName}</Badge>
+    <div className="relative bg-white border rounded-xl p-4 space-y-3 hover:shadow-md transition-shadow">
+      {/* Edit button */}
+      <button className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
+        <Pencil className="w-4 h-4" />
+      </button>
+
+      {/* Avatar */}
+      <div className="flex flex-col items-center text-center space-y-2">
+        {agent.avatarUrl ? (
+          <img
+            src={agent.avatarUrl}
+            alt={`${agent.agentFirstName} ${agent.agentLastName}`}
+            className="w-16 h-16 rounded-full object-cover"
+          />
         ) : (
-          <span className="text-muted-foreground text-xs">Not linked</span>
+          <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-lg font-semibold text-slate-500">
+            {agent.agentFirstName?.[0]}
+            {agent.agentLastName?.[0]}
+          </div>
         )}
-      </td>
-      <td className="px-6 py-4 text-right">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onLink}
-          disabled={isLinking}
-        >
-          <Link className="w-3 h-3 mr-2" />
-          Link to Company
-        </Button>
-      </td>
-    </tr>
+
+        {/* Name */}
+        <p className="font-semibold text-sm">
+          {agent.agentFirstName} {agent.agentLastName}
+        </p>
+
+        {/* Role tags */}
+        {agent.roles && agent.roles.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-1">
+            {agent.roles.map((role) => (
+              <span
+                key={role}
+                className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  roleColors[role] ?? "bg-slate-100 text-slate-600"
+                }`}
+              >
+                {role === "VRCreator" ? "VR Creator" : role}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Contact info */}
+      <div className="space-y-1">
+        {agent.email && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Mail className="w-3 h-3 shrink-0" />
+            <span className="truncate">{agent.email}</span>
+          </div>
+        )}
+        {agent.phoneNumber && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Phone className="w-3 h-3 shrink-0" />
+            {agent.phoneNumber}
+          </div>
+        )}
+      </div>
+
+      {/* Availability button */}
+      <Button
+        size="sm"
+        className="w-full bg-[#1DA1F2] hover:bg-[#1a91da] text-white rounded-full text-xs"
+        onClick={onLink}
+        disabled={isLinking}
+      >
+        Availability
+      </Button>
+    </div>
   );
 }
