@@ -50,7 +50,9 @@ const SelectionTab = lazy(
 const ContactsTab = lazy(
   () => import("@/features/selection/components/ContactList"),
 );
-
+const ContactForm = lazy(
+  () => import("@/features/selection/components/ContactForm"),
+);
 const nextStatusMap: Record<number, number> = { 1: 2, 2: 3, 3: 4 };
 
 const formatPrice = (price: number) =>
@@ -298,7 +300,10 @@ export default function ListingDetailPage() {
 
         <TabsContent value="contacts" className="mt-6">
           <Suspense fallback={<Skeleton className="h-48 w-full" />}>
-            <ContactsTab listingId={listingId} />
+            <div className="space-y-6">
+              <ContactsTab listingId={listingId} />
+              <ContactForm listingId={listingId} />
+            </div>
           </Suspense>
         </TabsContent>
       </Tabs>
