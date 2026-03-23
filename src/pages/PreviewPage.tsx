@@ -20,6 +20,7 @@ import { getPreview, publishListing } from "@/api/publish.api";
 import { updateListing } from "@/api/listing.api";
 import PropertyDescription from "@/features/publish/components/PropertyDescription";
 import PropertyDetailsModal from "@/features/publish/components/PropertyDetailsModal";
+import AgentContactsSection from "@/features/publish/components/AgentContactsSection";
 import type { PropertyType, SaleCategory } from "@/types/enums";
 import type { ListingCase } from "@/types/models";
 import { saleCategoryLabel } from "@/utils/enumMaps";
@@ -93,7 +94,7 @@ export default function PreviewPage() {
     );
   }
 
-  const { listing, media, contacts } = data;
+  const { listing, media } = data;
   const heroImage = media.find((m) => m.isHero);
   const photos = media.filter((m) => m.mediaType === 1 && m.isSelect);
   const floorPlans = media.filter((m) => m.mediaType === 3);
@@ -355,34 +356,10 @@ export default function PreviewPage() {
         </section>
 
         {/* Contacts */}
-        {contacts.length > 0 && (
-          <section id="contacts" className="space-y-6">
-            <h2 className="text-xl font-semibold text-center">
-              Agent Contacts
-            </h2>
-            <div className="flex flex-wrap justify-center gap-4">
-              {contacts.map((contact) => (
-                <div
-                  key={contact.contactId}
-                  className="border rounded-xl p-6 text-center space-y-2 min-w-48"
-                >
-                  <p className="font-semibold text-sm">
-                    {contact.firstName} {contact.lastName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {contact.companyName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {contact.email}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {contact.phoneNumber}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        <section id="contacts" className="space-y-6">
+          <h2 className="text-xl font-semibold text-center">Agent Contacts</h2>
+          <AgentContactsSection listingId={listingId} />
+        </section>
       </div>
 
       <footer className="border-t py-6 text-center">
