@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { X, Globe, Copy, Menu } from "lucide-react";
+import {
+  X,
+  Globe,
+  Copy,
+  Menu,
+  Pencil,
+  Bed,
+  Bath,
+  Car,
+  Maximize2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPreview, publishListing } from "@/api/publish.api";
 import { propertyTypeLabel, saleCategoryLabel } from "@/utils/enumMaps";
-import { Bed, Bath, Car, Maximize2 } from "lucide-react";
+
+const CoverImageSelector = lazy(
+  () => import("@/features/publish/components/CoverImageSelector"),
+);
+const PhotoSelector = lazy(
+  () => import("@/features/publish/components/PhotoSelector"),
+);
 
 const sections = [
   { id: "cover", label: "Cover" },
@@ -27,6 +43,8 @@ export default function PreviewPage() {
 
   const [shareableUrl, setShareableUrl] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState(false);
+  const [editingCover, setEditingCover] = useState(false);
+  const [editingPhotos, setEditingPhotos] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["preview", listingId],
@@ -58,8 +76,8 @@ export default function PreviewPage() {
   const floorPlans = media.filter((m) => m.mediaType === 3);
   const videos = media.filter((m) => m.mediaType === 2);
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const scrollTo = (sectionId: string) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
     setNavOpen(false);
   };
 
@@ -155,7 +173,20 @@ export default function PreviewPage() {
       )}
 
       {/* Hero section */}
-      <div id="cover" className="grid grid-cols-1 md:grid-cols-2 h-64 md:h-96">
+      <div
+        id="cover"
+        className="relative grid grid-cols-1 md:grid-cols-2 h-64 md:h-96"
+      >
+        {/* Edit cover button */}
+        <button
+          onClick={() => setEditingCover(true)}
+          className="absolute top-3 left-3 z-10 flex items-center gap-1 bg-white/90 text-xs px-3 py-1.5 rounded-full shadow hover:bg-white transition-colors"
+        >
+          <Pencil className="w-3 h-3" />
+          Edit
+        </button>
+
+        {/* Left — hero image */}
         <div className="relative overflow-hidden">
           {heroImage ? (
             <img
@@ -171,6 +202,8 @@ export default function PreviewPage() {
             </div>
           )}
         </div>
+
+        {/* Right — dark overlay with details */}
         <div className="bg-slate-900 flex flex-col items-center justify-center px-8 text-white space-y-4">
           <p className="text-xs uppercase tracking-widest text-slate-400">
             {saleCategoryLabel[listing.saleCategory]}
@@ -217,12 +250,23 @@ export default function PreviewPage() {
         {/* Photography */}
         {photos.length > 0 && (
           <section id="photography" className="space-y-4">
-            <h2 className="text-xl font-semibold text-center">Photography</h2>
+            <div className="flex items-center justify-center gap-3">
+              <h2 className="text-xl font-semibold">Photography</h2>
+              <button
+                onClick={() => setEditingPhotos(true)}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border rounded-full px-3 py-1"
+              >
+                <Pencil className="w-3 h-3" />
+                Edit
+              </button>
+            </div>
             <div className="grid grid-cols-3 gap-2">
               {photos.map((photo, i) => (
                 <div
                   key={photo.id}
-                  className={`overflow-hidden rounded-md ${i === 0 ? "col-span-2 row-span-2" : ""}`}
+                  className={`overflow-hidden rounded-md ${
+                    i === 0 ? "col-span-2 row-span-2" : ""
+                  }`}
                 >
                   <img
                     src={photo.mediaUrl}
@@ -314,6 +358,52 @@ export default function PreviewPage() {
       <footer className="border-t py-6 text-center">
         <p className="text-xs text-muted-foreground">Powered by recam</p>
       </footer>
+
+      {/* Cover image selector modal */}
+      {editingCover && (
+        <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm">Select Cover Image</h3>
+              <button
+                onClick={() => setEditingCover(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+              <CoverImageSelector
+                listingId={listingId}
+                onClose={() => setEditingCover(false)}
+              />
+            </Suspense>
+          </div>
+        </div>
+      )}
+
+      {/* Photo selector modal */}
+      {editingPhotos && (
+        <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-sm">Select Display Photos</h3>
+              <button
+                onClick={() => setEditingPhotos(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <Suspense fallback={<Skeleton className="h-48 w-full" />}>
+              <PhotoSelector
+                listingId={listingId}
+                onClose={() => setEditingPhotos(false)}
+              />
+            </Suspense>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
