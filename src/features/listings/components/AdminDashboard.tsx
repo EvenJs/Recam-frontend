@@ -22,15 +22,18 @@ export default function AdminDashboard() {
   });
 
   const filtered = search.trim()
-    ? listings.filter(
-        (l) =>
-          l.title.toLowerCase().includes(search.toLowerCase()) ||
-          `${l.street} ${l.city} ${l.state}`
-            .toLowerCase()
-            .includes(search.toLowerCase()),
-      )
-    : listings;
+    ? listings.filter((l, i) => {
+        const orderNumber = String(i + 1 + (page - 1) * 10).padStart(6, "0");
+        const address = `${l.street} ${l.city} ${l.state}`.toLowerCase();
+        const term = search.toLowerCase();
 
+        return (
+          l.title.toLowerCase().includes(term) ||
+          address.includes(term) ||
+          orderNumber.includes(term)
+        );
+      })
+    : listings;
   if (isError) return <ErrorState onRetry={refetch} />;
 
   return (
