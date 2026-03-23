@@ -18,6 +18,7 @@ import EditListingPage from "@/pages/EditListingPage";
 import PreviewPage from "@/pages/PreviewPage";
 import AgentsPage from "@/pages/AgentsPage";
 import ProfilePage from "@/pages/ProfilePage";
+import PublicPreviewPage from "@/pages/PublicPreviewPage";
 
 import "./index.css";
 import { Toaster } from "sonner";
@@ -29,6 +30,8 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           {/* Public */}
           <Route path="/login" element={<LoginPage />} />
+
+          <Route path="/p/:token" element={<PublicPreviewPage />} />
 
           {/* Protected */}
           <Route element={<ProtectedRoute />}>
