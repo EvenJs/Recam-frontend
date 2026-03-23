@@ -45,7 +45,9 @@ export async function deleteListing(id: number): Promise<void> {
 }
 
 export async function updateStatus(id: number, status: ListcaseStatus): Promise<ListingCase> {
-  const response = await apiClient.patch(`/listings/${id}/status`, { status })
+  const response = await apiClient.patch(`/listings/${id}/status`, status, {
+    headers: { 'Content-Type': 'application/json' },
+  })
   return response.data.data
 }
 
