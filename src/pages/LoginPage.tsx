@@ -43,9 +43,13 @@ export default function LoginPage() {
       });
       navigate("/dashboard");
     } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
       const message =
-        (err as { response?: { data?: { message?: string } } })?.response?.data
-          ?.message ?? "Something went wrong";
+        status === 401
+          ? "Invalid email or password"
+          : ((err as { response?: { data?: { message?: string } } })?.response
+              ?.data?.message ?? "Something went wrong");
       setError("root", { message });
     }
   };
