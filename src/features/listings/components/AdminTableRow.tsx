@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { listcaseStatusLabel } from "@/utils/enumMaps";
+import { listcaseStatusColor, listcaseStatusLabel } from "@/utils/enumMaps";
 import type { ListingCase } from "@/types/models";
 
 interface AdminTableRowProps {
@@ -21,7 +21,7 @@ export default function AdminTableRow({ listing, index }: AdminTableRowProps) {
   const address = `${listing.street}, ${listing.city} ${listing.state}`;
   const orderNumber = String(index).padStart(6, "0");
   const orderTime = new Date(listing.createdAt).toISOString().split("T")[0];
-  const isDelivered = listing.listcaseStatus === 4;
+  // const isDelivered = listing.listcaseStatus === 4;
 
   return (
     <tr
@@ -35,13 +35,7 @@ export default function AdminTableRow({ listing, index }: AdminTableRowProps) {
       </td>
       <td className="px-6 py-4 text-muted-foreground">{orderTime}</td>
       <td className="px-6 py-4">
-        <Badge
-          className={
-            isDelivered
-              ? "bg-green-100 text-green-700 hover:bg-green-100"
-              : "bg-blue-100 text-blue-700 hover:bg-blue-100"
-          }
-        >
+        <Badge className={listcaseStatusColor[listing.listcaseStatus]}>
           {listcaseStatusLabel[listing.listcaseStatus]}
         </Badge>
       </td>

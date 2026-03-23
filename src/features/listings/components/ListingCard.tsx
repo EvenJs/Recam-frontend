@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Camera, FileText, Video, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { listcaseStatusLabel } from "@/utils/enumMaps";
+import { listcaseStatusColor, listcaseStatusLabel } from "@/utils/enumMaps";
 import type { ListingCase } from "@/types/models";
 
 interface ListingCardProps {
@@ -58,13 +58,7 @@ export default function ListingCard({ listing, index }: ListingCardProps) {
             Ordered on {formatDate(listing.createdAt)}
           </p>
         </div>
-        <Badge
-          className={
-            isDelivered(listing.listcaseStatus)
-              ? "bg-green-100 text-green-700 hover:bg-green-100 shrink-0"
-              : "bg-blue-100 text-blue-700 hover:bg-blue-100 shrink-0"
-          }
-        >
+        <Badge className={listcaseStatusColor[listing.listcaseStatus]}>
           {listcaseStatusLabel[listing.listcaseStatus]}
         </Badge>
       </div>
