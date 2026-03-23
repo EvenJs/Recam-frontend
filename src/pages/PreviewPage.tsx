@@ -17,7 +17,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getPreview, publishListing } from "@/api/publish.api";
-import { propertyTypeLabel, saleCategoryLabel } from "@/utils/enumMaps";
+import { updateListing } from "@/api/listing.api";
+import PropertyDescription from "@/features/publish/components/PropertyDescription";
+import PropertyDetailsModal from "@/features/publish/components/PropertyDetailsModal";
+import type { PropertyType, SaleCategory } from "@/types/enums";
+import type { ListingCase } from "@/types/models";
+import { saleCategoryLabel } from "@/utils/enumMaps";
+import { queryClient } from "@/lib/queryClient";
 
 const CoverImageSelector = lazy(
   () => import("@/features/publish/components/CoverImageSelector"),
@@ -45,6 +51,7 @@ export default function PreviewPage() {
   const [navOpen, setNavOpen] = useState(false);
   const [editingCover, setEditingCover] = useState(false);
   const [editingPhotos, setEditingPhotos] = useState(false);
+  const [editingDetails, setEditingDetails] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["preview", listingId],
@@ -58,6 +65,22 @@ export default function PreviewPage() {
       toast.success("Published!");
     },
     onError: () => toast.error("Failed to publish"),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: Partial<ListingCase>) =>
+      updateListing(listingId, {
+        ...data,
+        propertyType: data.propertyType as PropertyType,
+        saleCategory: data.saleCategory as SaleCategory,
+      }),
+    onSuccess: () => {
+      toast.success("Details updated");
+      queryClient.invalidateQueries({ queryKey: ["preview", listingId] });
+      queryClient.invalidateQueries({ queryKey: ["listing", listingId] });
+      setEditingDetails(false);
+    },
+    onError: () => toast.error("Failed to update details"),
   });
 
   if (isLoading) return <PreviewSkeleton />;
@@ -237,14 +260,21 @@ export default function PreviewPage() {
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-12 space-y-16">
         {/* Description */}
         <section id="description" className="text-center space-y-3">
-          <h2 className="text-xl font-semibold">Property Description</h2>
-          <p className="text-sm text-muted-foreground">
-            {propertyTypeLabel[listing.propertyType]} ·{" "}
-            {saleCategoryLabel[listing.saleCategory]}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            {listing.street}, {listing.city}, {listing.state} {listing.postcode}
-          </p>
+          <div className="flex items-center justify-center gap-3">
+            <h2 className="text-xl font-semibold">Property Description</h2>
+            <button
+              onClick={() => setEditingDetails(true)}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground border rounded-full px-3 py-1"
+            >
+              <Pencil className="w-3 h-3" />
+              Edit
+            </button>
+          </div>
+          <PropertyDescription
+            description={listing.street}
+            onSave={(desc) => updateMutation.mutate({ street: desc })}
+            isSaving={updateMutation.isPending}
+          />
         </section>
 
         {/* Photography */}
@@ -358,7 +388,15 @@ export default function PreviewPage() {
       <footer className="border-t py-6 text-center">
         <p className="text-xs text-muted-foreground">Powered by recam</p>
       </footer>
-
+      {/* Property details modal */}
+      {editingDetails && (
+        <PropertyDetailsModal
+          listing={listing}
+          onSave={(data) => updateMutation.mutate(data)}
+          onClose={() => setEditingDetails(false)}
+          isSaving={updateMutation.isPending}
+        />
+      )}
       {/* Cover image selector modal */}
       {editingCover && (
         <div className="fixed inset-0 z-40 bg-black/50 flex items-center justify-center p-4">
