@@ -52,5 +52,7 @@ export async function updateStatus(id: number, status: ListcaseStatus): Promise<
 }
 
 export async function assignAgent(listingId: number, agentId: string): Promise<void> {
-  await apiClient.post(`/listings/${listingId}/assign-agent`, { agentId })
+  console.log(agentId)
+  await apiClient.post(`/listings/${listingId}/assign-agent`, JSON.stringify(agentId),
+    { headers: { 'Content-Type': 'application/json' } })
 }

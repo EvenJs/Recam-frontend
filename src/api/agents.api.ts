@@ -16,12 +16,14 @@ export async function createAgent(data: CreateAgentDto): Promise<Agent> {
   return response.data.data
 }
 
-export async function searchAgent(email: string): Promise<Agent | null> {
+export async function searchAgent(email: string): Promise<Agent[]> {
   try {
     const response = await apiClient.get('/agents/search', { params: { email } })
-    return response.data.data
+    const data = response.data.data
+    if (Array.isArray(data)) return data
+    return data ? [data] : []
   } catch {
-    return null
+    return []
   }
 }
 

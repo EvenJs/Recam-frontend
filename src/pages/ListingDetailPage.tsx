@@ -42,6 +42,7 @@ import {
   saleCategoryLabel,
 } from "@/utils/enumMaps";
 import type { ListcaseStatus } from "@/types/enums";
+import type { Agent } from "@/types/models";
 
 const MediaTab = lazy(() => import("@/features/media/components/MediaGallery"));
 const SelectionTab = lazy(
@@ -69,6 +70,7 @@ export default function ListingDetailPage() {
   // Assign agent modal state
   const [agentDialogOpen, setAgentDialogOpen] = useState(false);
   const [agentEmail, setAgentEmail] = useState("");
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const debouncedEmail = useDebounce(agentEmail, 300);
 
   const {
@@ -80,7 +82,7 @@ export default function ListingDetailPage() {
     queryFn: () => getListing(listingId),
   });
 
-  const { data: foundAgent } = useQuery({
+  const { data: foundAgents = [] } = useQuery({
     queryKey: ["agentSearch", debouncedEmail],
     queryFn: () => searchAgent(debouncedEmail),
     enabled: debouncedEmail.length > 3,
@@ -175,39 +177,58 @@ export default function ListingDetailPage() {
                   Assign Agent
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-sm rounded-2xl p-6">
                 <DialogHeader>
-                  <DialogTitle>Assign Agent</DialogTitle>
+                  <DialogTitle className="text-base font-semibold">
+                    Assign Agent
+                  </DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 pt-2">
+                <div className="space-y-3 pt-2">
                   <Input
                     placeholder="Search by email"
                     value={agentEmail}
                     onChange={(e) => setAgentEmail(e.target.value)}
+                    className="rounded-lg"
                   />
+
+                  {/* Result area — only show when debounced email is long enough */}
+
                   {debouncedEmail.length > 3 &&
-                    (foundAgent ? (
-                      <div className="p-3 border rounded-md bg-muted text-sm">
-                        <p className="font-medium">
-                          {foundAgent.agentFirstName} {foundAgent.agentLastName}
-                        </p>
-                        <p className="text-muted-foreground">
-                          {foundAgent.email}
-                        </p>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
+                    (foundAgents.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-2">
                         No agent found
                       </p>
+                    ) : (
+                      foundAgents.map((agent) => (
+                        <div
+                          key={agent.id}
+                          onClick={() => setSelectedAgent(agent)}
+                          className={`p-3 border rounded-lg text-sm cursor-pointer transition-colors ${
+                            selectedAgent?.id === agent.id
+                              ? "border-primary bg-primary/5"
+                              : "hover:bg-slate-50"
+                          }`}
+                        >
+                          <p className="font-medium">
+                            {agent.agentFirstName} {agent.agentLastName}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {agent.email}
+                          </p>
+                        </div>
+                      ))
                     ))}
+
                   <Button
-                    className="w-full"
-                    disabled={!foundAgent || assignMutation.isPending}
+                    className="w-full rounded-lg"
+                    disabled={!selectedAgent || assignMutation.isPending}
                     onClick={() =>
-                      foundAgent && assignMutation.mutate(foundAgent.id)
+                      selectedAgent && assignMutation.mutate(selectedAgent.id)
                     }
                   >
-                    Confirm Assignment
+                    {assignMutation.isPending
+                      ? "Assigning..."
+                      : "Confirm Assignment"}
                   </Button>
                 </div>
               </DialogContent>
