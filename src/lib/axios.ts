@@ -3,9 +3,9 @@ import { useAuthStore } from '@/store/authStore'
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // },
 })
 
 // Attach JWT token to every request
@@ -21,7 +21,9 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const is401 = error.response?.status === 401
+    const isLoginEndpoint = error.config?.url?.includes('/auth/login')
+    if (is401 && !isLoginEndpoint) {
       useAuthStore.getState().clearAuth()
       window.location.href = '/login'
     }

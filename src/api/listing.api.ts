@@ -10,9 +10,21 @@ export async function getListings(params: {
   status?: ListcaseStatus
 }): Promise<PaginatedData<ListingCase>> {
   const response = await apiClient.get('/listings', { params })
-  return response.data.data
-}
+  const data = response.data.data
 
+  // Handle both paginated and plain array responses
+  if (Array.isArray(data)) {
+    return {
+      items: data,
+      page: params.page,
+      pageSize: params.pageSize,
+      totalCount: data.length,
+      totalPages: 1,
+    }
+  }
+
+  return data
+}
 export async function getListing(id: number): Promise<ListingCase> {
   const response = await apiClient.get(`/listings/${id}`)
   return response.data.data
@@ -33,10 +45,14 @@ export async function deleteListing(id: number): Promise<void> {
 }
 
 export async function updateStatus(id: number, status: ListcaseStatus): Promise<ListingCase> {
-  const response = await apiClient.patch(`/listings/${id}/status`, { status })
+  const response = await apiClient.patch(`/listings/${id}/status`, status, {
+    headers: { 'Content-Type': 'application/json' },
+  })
   return response.data.data
 }
 
 export async function assignAgent(listingId: number, agentId: string): Promise<void> {
-  await apiClient.post(`/listings/${listingId}/assign-agent`, { agentId })
+  console.log(agentId)
+  await apiClient.post(`/listings/${listingId}/assign-agent`, JSON.stringify(agentId),
+    { headers: { 'Content-Type': 'application/json' } })
 }

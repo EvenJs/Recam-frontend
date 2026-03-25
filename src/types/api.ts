@@ -19,6 +19,8 @@ export interface PaginatedData<T> {
 export type PaginatedResponse<T> = ApiResponse<PaginatedData<T>>
 
 export interface LoginResponse {
+  firstName: string
+  lastName: string
   token: string
   userId: string
   email: string

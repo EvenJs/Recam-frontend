@@ -30,7 +30,12 @@ export default function AgentsPage() {
       toast.success("Agent linked to company");
       queryClient.invalidateQueries({ queryKey: ["agents"] });
     },
-    onError: () => toast.error("Failed to link agent"),
+    onError: (error: unknown) => {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message ?? "Failed to link agent";
+      toast.error(message);
+    },
   });
 
   if (!isAdmin) return null;
@@ -175,15 +180,26 @@ function AgentCard({
         )}
       </div>
 
-      {/* Availability button */}
-      <Button
-        size="sm"
-        className="w-full bg-[#1DA1F2] hover:bg-[#1a91da] text-white rounded-full text-xs"
-        onClick={onLink}
-        disabled={isLinking}
-      >
-        Availability
-      </Button>
+      {/* Only show link button if not already linked */}
+      {!agent.companyName ? (
+        <Button
+          size="sm"
+          className="w-full bg-[#1DA1F2] hover:bg-[#1a91da] text-white rounded-full text-xs"
+          onClick={onLink}
+          disabled={isLinking}
+        >
+          Link to Company
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          className="w-full rounded-full text-xs"
+          disabled
+        >
+          ✓ Linked
+        </Button>
+      )}
     </div>
   );
 }

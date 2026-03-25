@@ -12,13 +12,11 @@ export const listcaseStatusLabel: Record<ListcaseStatus, string> = {
   4: 'Delivered',
 }
 
-export const listcaseStatusColor: Record<ListcaseStatus,
-  'secondary' | 'outline' | 'default' | 'destructive'
-> = {
-  1: 'outline',     // Created
-  2: 'outline',     // Pending  
-  3: 'outline',     // InReview
-  4: 'default',     // Delivered — green (we'll customise this next)
+export const listcaseStatusColor: Record<ListcaseStatus, string> = {
+  1: 'bg-orange-100 text-orange-700',  // Created
+  2: 'bg-blue-100 text-blue-700',      // Pending
+  3: 'bg-purple-100 text-purple-700',  // InReview
+  4: 'bg-green-100 text-green-700',    // Delivered
 }
 
 export const mediaTypeLabel: Record<MediaType, string> = {
