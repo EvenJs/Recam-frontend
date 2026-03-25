@@ -9,7 +9,7 @@ import EmptyState from "@/components/common/EmptyState";
 import ErrorState from "@/components/common/ErrorState";
 import { useAuth } from "@/hooks/useAuth";
 
-export default function AdminDashboard() {
+export default function AgentDashboard() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { user } = useAuth();

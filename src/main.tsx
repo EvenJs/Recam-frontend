@@ -8,7 +8,7 @@ import { queryClient } from "@/lib/queryClient";
 import ProtectedRoute from "@/components/guards/ProtectedRoute";
 import RoleGuard from "@/components/guards/RoleGuard";
 import AdminLayout from "@/components/layout/AdminLayout";
-import AgentLayout from "@/components/layout/AgentLayout";
+import RoleBasedLayout from "./components/layout/RoleBasedLayout";
 
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
@@ -40,7 +40,6 @@ createRoot(document.getElementById("root")!).render(
               element={<RoleGuard allowedRoles={["PhotographyCompany"]} />}
             >
               <Route element={<AdminLayout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/listings/new" element={<CreateListingPage />} />
                 <Route
                   path="/listings/:id/edit"
@@ -50,29 +49,14 @@ createRoot(document.getElementById("root")!).render(
               </Route>
             </Route>
 
-            {/* Agent only */}
-            <Route element={<RoleGuard allowedRoles={["Agent"]} />}>
-              <Route element={<AgentLayout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/listings/:id" element={<ListingDetailPage />} />
-                <Route path="/listings/:id/preview" element={<PreviewPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-              </Route>
-            </Route>
-
-            {/* Admin shared routes — also in AdminLayout */}
-            <Route
-              element={<RoleGuard allowedRoles={["PhotographyCompany"]} />}
-            >
-              <Route element={<AdminLayout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/listings/:id" element={<ListingDetailPage />} />
-                <Route path="/listings/:id/preview" element={<PreviewPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-              </Route>
+            {/* Shared routes — both roles, layout chosen by role */}
+            <Route element={<RoleBasedLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/listings/:id" element={<ListingDetailPage />} />
+              <Route path="/listings/:id/preview" element={<PreviewPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>
-
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
