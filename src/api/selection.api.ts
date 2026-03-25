@@ -3,7 +3,11 @@ import type { MediaAsset, CaseContact } from '@/types/models'
 import type { CreateContactDto } from '@/types/dto'
 
 export async function selectMedia(listingId: number, mediaIds: number[]): Promise<void> {
-  await apiClient.put(`/listings/${listingId}/selected-media`, { mediaIds })
+  await apiClient.put(
+    `/listings/${listingId}/selected-media`,
+    mediaIds,
+    { headers: { 'Content-Type': 'application/json' } }
+  )
 }
 
 export async function getFinalSelection(listingId: number): Promise<MediaAsset[]> {
