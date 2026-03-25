@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -35,7 +35,7 @@ createRoot(document.getElementById("root")!).render(
 
           {/* Protected */}
           <Route element={<ProtectedRoute />}>
-            {/* Admin */}
+            {/* Admin only */}
             <Route
               element={<RoleGuard allowedRoles={["PhotographyCompany"]} />}
             >
@@ -47,13 +47,10 @@ createRoot(document.getElementById("root")!).render(
                   element={<EditListingPage />}
                 />
                 <Route path="/agents" element={<AgentsPage />} />
-                <Route path="/listings/:id" element={<ListingDetailPage />} />
-                <Route path="/listings/:id/preview" element={<PreviewPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
 
-            {/* Agent */}
+            {/* Agent only */}
             <Route element={<RoleGuard allowedRoles={["Agent"]} />}>
               <Route element={<AgentLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
@@ -62,7 +59,22 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
+
+            {/* Admin shared routes — also in AdminLayout */}
+            <Route
+              element={<RoleGuard allowedRoles={["PhotographyCompany"]} />}
+            >
+              <Route element={<AdminLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/listings/:id" element={<ListingDetailPage />} />
+                <Route path="/listings/:id/preview" element={<PreviewPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
+            </Route>
           </Route>
+
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
       <Toaster position="top-right" richColors />

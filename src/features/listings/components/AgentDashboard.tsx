@@ -41,7 +41,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">
-            Hi, Welcome {user?.email?.split("@")[0]}!
+            Hi, Welcome {user?.firstName} {user?.lastName}!
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Manage your property orders

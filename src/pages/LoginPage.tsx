@@ -38,6 +38,8 @@ export default function LoginPage() {
       const data = await login(values.email, values.password);
       useAuthStore.getState().setAuth(data.token, {
         userId: data.userId,
+        lastName: data.lastName,
+        firstName: data.firstName,
         email: data.email,
         role: data.role,
       });

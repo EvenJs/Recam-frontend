@@ -4,6 +4,8 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 interface AuthState {
   token: string | null
   user: {
+    firstName: string
+    lastName: string
     userId: string
     email: string
     role: 'PhotographyCompany' | 'Agent'

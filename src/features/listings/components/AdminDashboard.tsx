@@ -54,7 +54,7 @@ export default function AdminDashboard() {
       {/* Welcome + search — centered */}
       <div className="flex flex-col items-center gap-4 py-4">
         <h1 className="text-2xl font-bold">
-          Hi, Welcome {user?.email?.split("@")[0]}!
+          Hi, Welcome {user?.firstName} {user?.lastName}!
         </h1>
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
