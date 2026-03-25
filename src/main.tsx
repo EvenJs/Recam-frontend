@@ -22,6 +22,11 @@ import PublicPreviewPage from "@/pages/PublicPreviewPage";
 
 import "./index.css";
 import { Toaster } from "sonner";
+import ErrorBoundary from "./components/common/ErrorBoundary";
+
+function withErrorBoundary(element: React.ReactElement) {
+  return <ErrorBoundary>{element}</ErrorBoundary>;
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -40,21 +45,39 @@ createRoot(document.getElementById("root")!).render(
               element={<RoleGuard allowedRoles={["PhotographyCompany"]} />}
             >
               <Route element={<AdminLayout />}>
-                <Route path="/listings/new" element={<CreateListingPage />} />
+                <Route
+                  path="/listings/new"
+                  element={withErrorBoundary(<CreateListingPage />)}
+                />
                 <Route
                   path="/listings/:id/edit"
-                  element={<EditListingPage />}
+                  element={withErrorBoundary(<EditListingPage />)}
                 />
-                <Route path="/agents" element={<AgentsPage />} />
+                <Route
+                  path="/agents"
+                  element={withErrorBoundary(<AgentsPage />)}
+                />
               </Route>
             </Route>
 
             {/* Shared routes — both roles, layout chosen by role */}
             <Route element={<RoleBasedLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/listings/:id" element={<ListingDetailPage />} />
-              <Route path="/listings/:id/preview" element={<PreviewPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route
+                path="/dashboard"
+                element={withErrorBoundary(<DashboardPage />)}
+              />
+              <Route
+                path="/listings/:id"
+                element={withErrorBoundary(<ListingDetailPage />)}
+              />
+              <Route
+                path="/listings/:id/preview"
+                element={withErrorBoundary(<PreviewPage />)}
+              />
+              <Route
+                path="/profile"
+                element={withErrorBoundary(<ProfilePage />)}
+              />
             </Route>
           </Route>
           {/* Catch-all */}
