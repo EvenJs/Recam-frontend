@@ -169,6 +169,15 @@ export default function ListingDetailPage() {
               Edit
             </Button>
 
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(`/listings/${listingId}/preview`)}
+            >
+              {/* <Eye className="w-4 h-4 mr-2" /> */}
+              Preview
+            </Button>
+
             {/* Assign Agent */}
             <Dialog open={agentDialogOpen} onOpenChange={setAgentDialogOpen}>
               <DialogTrigger asChild>

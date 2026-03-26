@@ -3,7 +3,13 @@ import type { PreviewData } from '@/types/models'
 
 export async function getPreview(listingId: number): Promise<PreviewData> {
   const response = await apiClient.get(`/listings/${listingId}/preview`)
-  return response.data.data
+  const data = response.data.data
+
+  return {
+    listing: data,
+    media: [],
+    contacts: [],
+  }
 }
 
 export async function publishListing(listingId: number): Promise<string> {
