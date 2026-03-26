@@ -25,6 +25,7 @@ import type { PropertyType, SaleCategory } from "@/types/enums";
 import type { ListingCase } from "@/types/models";
 import { saleCategoryLabel } from "@/utils/enumMaps";
 import { queryClient } from "@/lib/queryClient";
+import { useMedia } from "@/features/media/hooks/useMedia";
 
 const CoverImageSelector = lazy(
   () => import("@/features/publish/components/CoverImageSelector"),
@@ -58,6 +59,8 @@ export default function PreviewPage() {
     queryKey: ["preview", listingId],
     queryFn: () => getPreview(listingId),
   });
+
+  const { all: media = [] } = useMedia(listingId);
 
   const publishMutation = useMutation({
     mutationFn: () => publishListing(listingId),
@@ -94,11 +97,11 @@ export default function PreviewPage() {
     );
   }
 
-  const { listing, media } = data;
-  const heroImage = media.find((m) => m.isHero);
-  const photos = media.filter((m) => m.mediaType === 1 && m.isSelect);
-  const floorPlans = media.filter((m) => m.mediaType === 3);
-  const videos = media.filter((m) => m.mediaType === 2);
+  const { listing } = data;
+  const heroImage = (media ?? []).find((m) => m.isHero);
+  const photos = (media ?? []).filter((m) => m.mediaType === 1 && m.isSelect);
+  const floorPlans = (media ?? []).filter((m) => m.mediaType === 3);
+  const videos = (media ?? []).filter((m) => m.mediaType === 2);
 
   const scrollTo = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });

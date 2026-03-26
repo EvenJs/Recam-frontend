@@ -71,7 +71,7 @@ export default function AgentDashboard() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border overflow-hidden shadow-sm">
+      <div className="hidden md:block bg-white rounded-xl border overflow-hidden shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-slate-50/80">
@@ -107,7 +107,7 @@ export default function AgentDashboard() {
                     key={listing.id}
                     listing={listing}
                     index={i + 1 + (page - 1) * 10}
-                    onClick={() => navigate(`/listings/${listing.id}`)}
+                    onClick={() => navigate(`/listings/${listing.id}/preview`)}
                   />
                 ))}
           </tbody>
@@ -162,7 +162,7 @@ export default function AgentDashboard() {
               <div
                 key={listing.id}
                 className="bg-white border rounded-xl px-4 py-3 cursor-pointer hover:shadow-sm transition-shadow"
-                onClick={() => navigate(`/listings/${listing.id}`)}
+                onClick={() => navigate(`/listings/${listing.id}/preview`)}
               >
                 <div className="flex items-start justify-between gap-2 mb-1.5">
                   <span className="text-xs text-muted-foreground font-mono">

@@ -3,6 +3,7 @@ import { Camera, FileText, Video, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { listcaseStatusColor, listcaseStatusLabel } from "@/utils/enumMaps";
 import type { ListingCase } from "@/types/models";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ListingCardProps {
   listing: ListingCase;
@@ -34,6 +35,7 @@ const isDelivered = (status: number) => status === 4;
 
 export default function ListingCard({ listing, index }: ListingCardProps) {
   const navigate = useNavigate();
+  const { isAgent } = useAuth();
   const orderNumber = index
     ? `Order # ${String(index).padStart(3, "0")}-${String(index).padStart(3, "0")}-${String(index).padStart(3, "0")}`
     : `Order # ${listing.id}`;
@@ -45,6 +47,14 @@ export default function ListingCard({ listing, index }: ListingCardProps) {
   const mediaTags = mediaTagConfig.filter((tag) =>
     availableTypes.includes(tag.type),
   );
+
+  const handleClick = () => {
+    if (isAgent) {
+      navigate(`/listings/${listing.id}/preview`);
+    } else {
+      navigate(`/listings/${listing.id}`);
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg border p-4 space-y-3">
@@ -98,7 +108,7 @@ export default function ListingCard({ listing, index }: ListingCardProps) {
       {isDelivered(listing.listcaseStatus) && (
         <div className="flex justify-end pt-1">
           <button
-            onClick={() => navigate(`/listings/${listing.id}/preview`)}
+            onClick={handleClick}
             className="flex items-center gap-2 bg-slate-800 text-white text-xs px-4 py-2 rounded-full hover:bg-slate-700 transition-colors"
           >
             <Globe className="w-3 h-3" />
