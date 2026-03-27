@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 const navLinks = [
   { to: "/dashboard", label: "Orders" },
   { to: "/agents", label: "Staff" },
+  { to: "/profile", label: "Profile" },
 ];
 
 export default function AdminLayout() {

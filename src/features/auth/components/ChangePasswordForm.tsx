@@ -3,7 +3,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,62 +55,59 @@ export default function ChangePasswordForm() {
       onSubmit={handleSubmit((data) => mutation.mutate(data))}
       className="space-y-4"
     >
-      <h3 className="text-sm font-medium">Change Password</h3>
+      <h3 className="text-sm font-semibold">Change Password</h3>
 
-      {/* Root error */}
       {errors.root && (
         <p className="text-sm text-destructive">{errors.root.message}</p>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="currentPassword">Current Password</Label>
+      <div className="space-y-1.5">
+        <Label className="text-sm">Current Password</Label>
         <Input
-          id="currentPassword"
           type="password"
           autoComplete="current-password"
           {...register("currentPassword")}
         />
         {errors.currentPassword && (
-          <p className="text-sm text-destructive">
+          <p className="text-xs text-destructive">
             {errors.currentPassword.message}
           </p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="newPassword">New Password</Label>
+      <div className="space-y-1.5">
+        <Label className="text-sm">New Password</Label>
         <Input
-          id="newPassword"
           type="password"
           autoComplete="new-password"
           {...register("newPassword")}
         />
         {errors.newPassword && (
-          <p className="text-sm text-destructive">
+          <p className="text-xs text-destructive">
             {errors.newPassword.message}
           </p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+      <div className="space-y-1.5">
+        <Label className="text-sm">Confirm New Password</Label>
         <Input
-          id="confirmPassword"
           type="password"
           autoComplete="new-password"
           {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
-          <p className="text-sm text-destructive">
+          <p className="text-xs text-destructive">
             {errors.confirmPassword.message}
           </p>
         )}
       </div>
 
-      <Button type="submit" disabled={isSubmitting || mutation.isPending}>
-        {(isSubmitting || mutation.isPending) && (
-          <Loader2 className="animate-spin mr-2 h-4 w-4" />
-        )}
+      <Button
+        type="submit"
+        className="w-full bg-slate-800 hover:bg-slate-700 rounded-full"
+        disabled={isSubmitting || mutation.isPending}
+      >
         Update Password
       </Button>
     </form>
