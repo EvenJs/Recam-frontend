@@ -6,12 +6,14 @@ interface PropertyDescriptionProps {
   description?: string;
   onSave: (description: string) => void;
   isSaving?: boolean;
+  readOnly?: boolean;
 }
 
 export default function PropertyDescription({
   description,
   onSave,
   isSaving,
+  readOnly = false,
 }: PropertyDescriptionProps) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(description ?? "");
@@ -51,6 +53,21 @@ export default function PropertyDescription({
             {isSaving ? "Saving..." : "Save"}
           </Button>
         </div>
+      </div>
+    );
+  }
+  if (readOnly) {
+    return (
+      <div className="text-center">
+        {description ? (
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+            {description}
+          </p>
+        ) : (
+          <p className="text-sm text-muted-foreground italic">
+            No description added yet.
+          </p>
+        )}
       </div>
     );
   }
