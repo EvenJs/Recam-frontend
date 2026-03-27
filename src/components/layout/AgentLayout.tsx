@@ -27,6 +27,13 @@ export default function AgentLayout() {
           >
             My Orders
           </NavLink>
+          <NavLink
+            to="/profile"
+            onClick={() => setMenuOpen(false)}
+            className="block py-2 text-sm font-medium"
+          >
+            Profile
+          </NavLink>
           <button
             onClick={() => {
               logout();
@@ -65,6 +72,18 @@ export default function AgentLayout() {
               }
             >
               My Orders
+            </NavLink>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-slate-200 text-foreground"
+                    : "text-muted-foreground hover:bg-slate-100"
+                }`
+              }
+            >
+              Profile
             </NavLink>
           </nav>
           <button
