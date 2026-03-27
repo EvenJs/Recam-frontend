@@ -24,6 +24,7 @@ export interface ListingCase {
   city: string
   state: string
   postcode: number
+  description?: string
   price: number
   bedrooms: number
   bathrooms: number

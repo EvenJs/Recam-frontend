@@ -59,7 +59,10 @@ createRoot(document.getElementById("root")!).render(
                 />
               </Route>
             </Route>
-
+            <Route
+              path="/listings/:id/preview"
+              element={withErrorBoundary(<PreviewPage />)}
+            />
             {/* Shared routes — both roles, layout chosen by role */}
             <Route element={<RoleBasedLayout />}>
               <Route
@@ -70,10 +73,7 @@ createRoot(document.getElementById("root")!).render(
                 path="/listings/:id"
                 element={withErrorBoundary(<ListingDetailPage />)}
               />
-              <Route
-                path="/listings/:id/preview"
-                element={withErrorBoundary(<PreviewPage />)}
-              />
+
               <Route
                 path="/profile"
                 element={withErrorBoundary(<ProfilePage />)}
