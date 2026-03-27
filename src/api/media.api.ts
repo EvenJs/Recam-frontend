@@ -27,7 +27,9 @@ export async function deleteMedia(mediaId: number): Promise<void> {
 }
 
 export async function setCoverImage(listingId: number, mediaId: number): Promise<void> {
-  await apiClient.put(`/listings/${listingId}/cover-image`, { mediaId })
+  await apiClient.put(`/listings/${listingId}/cover-image`, JSON.stringify(mediaId), {
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
 
 export async function downloadFile(mediaId: number): Promise<Blob> {
