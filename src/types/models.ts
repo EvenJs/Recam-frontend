@@ -36,6 +36,9 @@ export interface ListingCase {
   createdAt: string
   assignedAgentId?: number | null
   mediaTypes: number[]
+  shareableUrl?: string | null
+  heroImage?: MediaAsset | null
+  selectedMedia?: MediaAsset[]
 }
 
 export interface MediaAsset {

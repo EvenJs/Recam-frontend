@@ -3,15 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Download, Bed, Bath, Car, Maximize2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPreview } from "@/api/publish.api";
+import { getPublicPreview } from "@/api/publish.api";
 import { propertyTypeLabel, saleCategoryLabel } from "@/utils/enumMaps";
+import ContactCard from "@/features/selection/components/ContactCard";
 
 export default function PublicPreviewPage() {
   const { token } = useParams();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["preview", token],
-    queryFn: () => getPreview(Number(token)),
+    queryKey: ["publicPreview", token],
+    queryFn: () => getPublicPreview(token!),
     enabled: !!token,
   });
 
@@ -28,7 +29,7 @@ export default function PublicPreviewPage() {
   }
 
   const { listing, media, contacts } = data;
-
+  console.log("preview data:", data);
   const heroImage = media.find((m) => m.isHero);
   const photos = media.filter((m) => m.mediaType === 1 && m.isSelect);
   const floorPlans = media.filter((m) => m.mediaType === 3);
@@ -197,32 +198,10 @@ export default function PublicPreviewPage() {
         </section>
 
         {/* Contact */}
-        {contacts.length > 0 && (
-          <section className="space-y-6">
-            <h2 className="text-xl font-semibold text-center">Contact</h2>
-            <div className="flex flex-wrap justify-center gap-4">
-              {contacts.map((contact) => (
-                <div
-                  key={contact.contactId}
-                  className="border rounded-xl p-6 text-center space-y-2 min-w-48"
-                >
-                  <p className="font-semibold text-sm">
-                    {contact.firstName} {contact.lastName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {contact.companyName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {contact.email}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {contact.phoneNumber}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {contacts.length > 0 &&
+          contacts.map((contact) => (
+            <ContactCard key={contact.contactId} contact={contact} readOnly />
+          ))}
       </div>
 
       {/* Footer */}
