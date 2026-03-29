@@ -23,7 +23,9 @@ apiClient.interceptors.response.use(
   (error) => {
     const is401 = error.response?.status === 401
     const isLoginEndpoint = error.config?.url?.includes('/auth/login')
-    if (is401 && !isLoginEndpoint) {
+    const isPublicPreview = error.config?.url?.includes('/listings/preview/')
+
+    if (is401 && !isLoginEndpoint && !isPublicPreview) {
       useAuthStore.getState().clearAuth()
       window.location.href = '/login'
     }
