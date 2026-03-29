@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +12,6 @@ export default function AgentDashboard() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const { listings, totalPages, isLoading, isError, refetch } = useListings({
     page,
@@ -58,7 +56,7 @@ export default function AgentDashboard() {
       </div>
 
       {/* Cards */}
-      <div className="space-y-4">
+      <div className="space-y-4 hidden md:block">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-36 w-full rounded-xl" />
@@ -113,42 +111,11 @@ export default function AgentDashboard() {
               <Skeleton key={i} className="h-24 w-full rounded-xl" />
             ))
           : filtered.map((listing, i) => (
-              <div
+              <ListingCard
                 key={listing.id}
-                className="bg-white border rounded-xl px-4 py-3 cursor-pointer hover:shadow-sm transition-shadow"
-                onClick={() => navigate(`/listings/${listing.id}/preview`)}
-              >
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <span className="text-xs text-muted-foreground font-mono">
-                    #{String(i + 1 + (page - 1) * 10).padStart(6, "0")}
-                  </span>
-                  <span
-                    className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
-                      listing.listcaseStatus === 4
-                        ? "bg-green-100 text-green-700"
-                        : listing.listcaseStatus === 3
-                          ? "bg-purple-100 text-purple-700"
-                          : listing.listcaseStatus === 2
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-orange-100 text-orange-700"
-                    }`}
-                  >
-                    {listing.listcaseStatus === 4
-                      ? "Delivered"
-                      : listing.listcaseStatus === 3
-                        ? "In Review"
-                        : listing.listcaseStatus === 2
-                          ? "Pending"
-                          : "Created"}
-                  </span>
-                </div>
-                <p className="text-sm font-medium truncate">
-                  {listing.street}, {listing.city} {listing.state}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {new Date(listing.createdAt).toLocaleDateString("en-AU")}
-                </p>
-              </div>
+                listing={listing}
+                index={i + 1 + (page - 1) * 10}
+              />
             ))}
       </div>
     </div>
