@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Search, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useListings } from "@/features/listings/hooks/useListings";
-import AdminTableRow from "./AdminTableRow";
 import EmptyState from "@/components/common/EmptyState";
 import ErrorState from "@/components/common/ErrorState";
 import { useAuth } from "@/hooks/useAuth";
+import ListingCard from "./ListingCard";
 
 export default function AgentDashboard() {
   const [page, setPage] = useState(1);
@@ -38,24 +38,11 @@ export default function AgentDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">
-            Hi, Welcome {user?.firstName} {user?.lastName}!
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Manage your property orders
-          </p>
-        </div>
-        <Button
-          asChild
-          className="bg-[#1DA1F2] hover:bg-[#1a91da] rounded-full px-5 shrink-0"
-        >
-          <Link to="/listings/new">
-            <Plus className="w-4 h-4 mr-1.5" />
-            Create Order
-          </Link>
-        </Button>
+      <div>
+        <p className="text-sm text-muted-foreground">
+          Hi, {user?.firstName} {user?.lastName}
+        </p>
+        <h1 className="text-2xl font-bold mt-1">My Order</h1>
       </div>
 
       {/* Search */}
@@ -70,60 +57,27 @@ export default function AgentDashboard() {
         />
       </div>
 
-      {/* Table */}
-      <div className="hidden md:block bg-white rounded-xl border overflow-hidden shadow-sm">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-slate-50/80">
-              <th className="text-left px-5 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                Order
-              </th>
-              <th className="text-left px-5 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                Property Address
-              </th>
-              <th className="text-left px-5 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide hidden md:table-cell">
-                Date
-              </th>
-              <th className="text-left px-5 py-3 font-medium text-muted-foreground text-xs uppercase tracking-wide">
-                Status
-              </th>
-              <th className="px-5 py-3 w-10" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {isLoading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={i}>
-                    {Array.from({ length: 4 }).map((_, j) => (
-                      <td key={j} className="px-5 py-3.5">
-                        <Skeleton className="h-4 w-full" />
-                      </td>
-                    ))}
-                    <td className="px-5 py-3.5" />
-                  </tr>
-                ))
-              : filtered.map((listing, i) => (
-                  <AdminTableRow
-                    key={listing.id}
-                    listing={listing}
-                    index={i + 1 + (page - 1) * 10}
-                    onClick={() => navigate(`/listings/${listing.id}/preview`)}
-                  />
-                ))}
-          </tbody>
-        </table>
-
-        {!isLoading && filtered.length === 0 && (
-          <EmptyState
-            title={search ? "No results found" : "No orders yet"}
-            description={
-              search
-                ? "Try a different search term."
-                : "Create your first order to get started."
-            }
-          />
-        )}
+      {/* Cards */}
+      <div className="space-y-4">
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-36 w-full rounded-xl" />
+            ))
+          : filtered.map((listing, i) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                index={i + 1 + (page - 1) * 10}
+              />
+            ))}
       </div>
+
+      {!isLoading && filtered.length === 0 && (
+        <EmptyState
+          title="No orders yet"
+          description="No listings have been assigned to you yet."
+        />
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
