@@ -94,7 +94,7 @@ export default function ListingCard({ listing, index }: ListingCardProps) {
       {/* Price + View details */}
       <div className="flex items-center justify-between pt-1">
         <button
-          onClick={() => navigate(`/listings/${listing.id}`)}
+          onClick={handleClick}
           className="text-xs text-blue-500 hover:underline"
         >
           View order details &raquo;

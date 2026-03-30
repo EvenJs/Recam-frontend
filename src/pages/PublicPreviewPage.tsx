@@ -29,7 +29,7 @@ export default function PublicPreviewPage() {
   }
 
   const { listing, media, contacts } = data;
-  console.log("preview data:", data);
+
   const heroImage = media.find((m) => m.isHero);
   const photos = media.filter((m) => m.mediaType === 1 && m.isSelect);
   const floorPlans = media.filter((m) => m.mediaType === 3);
